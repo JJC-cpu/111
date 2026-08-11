@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 수업 안내</title>
+    <!-- 폰트 로드: 교실 환경에 어울리는 깔끔하고 가독성 좋은 폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 스타일 설정 - 글씨 크기를 큼직하게 설정 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f8ff; /* 칠판이나 스크린 배경으로 눈이 편안한 밝은 푸른색 */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* 전체 컨테이너 설정 */
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 95%;
+            max-width: 1200px; /* 전자칠판 환경 고려 넓게 */
+            margin-top: 20px;
+        }
+
+        /* 메인 제목 */
+        h1 {
+            text-align: center;
+            font-size: 3.5rem; /* 글씨 아주 크게 */
+            color: #2c3e50;
+            margin-bottom: 40px;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 20px;
+        }
+
+        /* 각 섹션 제목 (수업 목표, 준비물 등) */
+        h2 {
+            font-size: 2.5rem;
+            color: #2980b9;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* 섹션 제목 앞 아이콘 효과 */
+        h2::before {
+            content: "📍";
+            margin-right: 15px;
+            font-size: 2.5rem;
+        }
+
+        /* 목록 스타일 (수업 목표, 준비물 등) */
+        ul, ol {
+            font-size: 2.2rem; /* 목록 내용도 아주 크게 */
+            line-height: 1.6;
+            margin-bottom: 30px;
+            padding-left: 50px;
+        }
+
+        li {
+            margin-bottom: 15px;
+        }
+
+        /* 수정 가능한 수업목표 리스트 스타일 */
+        .goals-list[contenteditable="true"] {
+            padding: 10px 10px 10px 50px;
+            border-radius: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .goals-list[contenteditable="true"]:hover {
+            background-color: #f1f2f6;
+            cursor: text;
+        }
+
+        .goals-list[contenteditable="true"]:focus {
+            background-color: #f1f2f6;
+            outline: 2px dashed #3498db;
+            outline-offset: 2px;
+        }
+
+        /* 강조 텍스트 */
+        .highlight {
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        /* 준비물 섹션 특별 스타일 */
+        .supplies-box {
+            background-color: #fff9c4; /* 노란색 계열 배경으로 눈에 띄게 */
+            padding: 20px 30px;
+            border-radius: 15px;
+            border-left: 8px solid #f1c40f;
+            margin-bottom: 30px;
+        }
+
+        .supplies-box h2::before {
+            content: "✂️";
+        }
+
+        .supplies-box ul {
+            margin-bottom: 0;
+            padding: 10px 10px 10px 50px;
+            border-radius: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .supplies-box ul[contenteditable="true"]:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            cursor: text;
+        }
+
+        .supplies-box ul[contenteditable="true"]:focus {
+            background-color: rgba(255, 255, 255, 0.8);
+            outline: 2px dashed #f39c12;
+            outline-offset: 2px;
+        }
+
+        .edit-hint {
+            font-size: 1.2rem;
+            color: #95a5a6;
+            font-weight: 400;
+            margin-left: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        /* 마무리 질문 섹션 */
+        .questions-box {
+            background-color: #e8f8f5;
+            padding: 20px 30px;
+            border-radius: 15px;
+            border-left: 8px solid #1abc9c;
+        }
+        
+        .questions-box h2::before {
+            content: "🤔";
+        }
+
+        /* 응원 버튼 영역 */
+        .cheer-section {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* 시작하기 버튼 스타일 */
+        button {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #2980b9;
+            transition: all 0.1s;
+        }
+
+        /* 버튼 클릭 시 눌리는 효과 */
+        button:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 #2980b9;
+        }
+
+        /* 팝업 메시지 (숨겨져 있다가 버튼 클릭 시 나타남) */
+        #cheerMessage {
+            display: none; /* 처음에는 숨김 */
+            margin-top: 30px;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #e67e22;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: bounceIn 0.5s ease-out; /* 나타날 때 튀어오르는 애니메이션 */
+        }
+
+        /* 나타나는 애니메이션 정의 */
+        @keyframes bounceIn {
+            0% { transform: scale(0.1); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 모바일 등 작은 화면에서의 글자 크기 조정 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.8rem; }
+            ul, ol { font-size: 1.5rem; }
+            button { font-size: 1.5rem; }
+            #cheerMessage { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>✨ 오늘의 즐거운 배움 ✨</h1>
+
+        <!-- 수업 목표 영역 -->
+        <div>
+            <h2>수업목표 <span class="edit-hint">✏️ (클릭해서 직접 입력해 보세요)</span></h2>
+            <ol class="goals-list" contenteditable="true" spellcheck="false">
+                <li>존중하는 마음으로 친구의 의견을 끝까지 듣습니다.</li>
+                <li>오늘 배울 새로운 단어 5개를 익히고 문장을 만듭니다.</li>
+                <li>모둠 활동에서 나의 역할을 책임감 있게 수행합니다.</li>
+            </ol>
+        </div>
+
+        <!-- 준비물 영역 -->
+        <div class="supplies-box">
+            <h2>오늘 필요한 준비물 <span class="edit-hint">✏️ (클릭해서 직접 입력해 보세요)</span></h2>
+            <ul contenteditable="true" spellcheck="false">
+                <li>여기를 클릭해서 필요한 준비물을 적어주세요.</li>
+                <li>엔터(Enter) 키를 누르면 줄이 추가됩니다!</li>
+            </ul>
+        </div>
+
+        <!-- 마무리 질문 영역 -->
+        <div class="questions-box">
+            <h2>수업 후 스스로 묻기</h2>
+            <ul>
+                <li>오늘 가장 재미있었던 활동은 무엇인가요?</li>
+                <li>내가 오늘 새롭게 알게 된 사실 한 가지는 무엇인가요?</li>
+            </ul>
+        </div>
+
+        <!-- 응원 버튼 영역 -->
+        <div class="cheer-section">
+            <button onclick="showCheerMessage()">수업 시작하기</button>
+            <div id="cheerMessage">"오늘도 차분히 시작해 봅시다!" 🎉</div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript 로직 -->
+    <script>
+        function showCheerMessage() {
+            const messageElement = document.getElementById('cheerMessage');
+            
+            // 이미 보이고 있다면 숨겼다가 다시 보여줘서 애니메이션 효과를 다시 줌
+            if (messageElement.style.display === 'block') {
+                messageElement.style.display = 'none';
+                // 아주 짧은 시간 뒤에 다시 나타나게 하여 애니메이션 재시작
+                setTimeout(() => {
+                    messageElement.style.display = 'block';
+                }, 10);
+            } else {
+                messageElement.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
